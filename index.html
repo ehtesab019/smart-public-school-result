@@ -6,11 +6,7 @@
 <title>Smart Public School Andharkotha - Result Portal</title>
 
 <style>
-  <h3 style="text-align:center;
-color:#d32f2f;
-margin-top:10px;">
-FIRST TERMINAL EXAMINATION 2026-27
-</h3>
+ 
 
 *{
 margin:0;
@@ -141,8 +137,15 @@ color:#666;
 <img src="logo.jpg" class="logo">
 
 <h1>SMART PUBLIC SCHOOL</h1>
-
 <h2>ANDHARKOTHA</h2>
+  <h2 style="text-align:center;color:#003399;">
+FIRST TERMINAL EXAMINATION 2026-27
+</h2>
+
+<label>Select Examination</label>
+<select id="exam">
+    <option value="First Terminal Examination">First Terminal Examination</option>
+</select>
 
 <p class="tagline">
 Dream Learn Achieve
@@ -374,3 +377,17 @@ Result Not Found
 
 </body>
 </html>
+<button onclick="teacherLogin()">Teacher Login</button>
+
+<script>
+function teacherLogin() {
+    let schoolCode = prompt("Enter School Code");
+    let password = prompt("Enter Password");
+
+    if (schoolCode === "SPS2026" && password === "Smart@123") {
+        window.location.href = "all-results.html";
+    } else {
+        alert("Wrong School Code or Password!");
+    }
+}
+</script>
