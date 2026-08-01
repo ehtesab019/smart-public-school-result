@@ -1,0 +1,791 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Public School Andharkotha - Result Portal</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: auto;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+h1 {
+    text-align: center;
+    color: #003399;
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+h2 {
+    text-align: center;
+    color: #ff9800;
+    margin-top: 2px;
+    font-size: 18px;
+}
+
+.tagline {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+hr {
+    margin: 15px 0;
+    border: 0;
+    border-top: 2px solid #003399;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+select, input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    text-transform: uppercase;
+}
+
+input[type="password"] {
+    text-transform: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: #003399;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0055cc;
+}
+
+.mark-sheet {
+    border: 3px double #003399;
+    padding: 20px;
+    background: #fff;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table, th, td {
+    border: 1px solid #333;
+}
+
+th {
+    background: #003399;
+    color: white;
+    padding: 8px;
+    font-size: 13px;
+}
+
+td {
+    padding: 6px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.pass {
+    color: green;
+    font-weight: bold;
+}
+
+.fail {
+    color: red;
+    font-weight: bold;
+}
+
+.sign-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+@media print {
+    body {
+        background-color: white;
+        padding: 0;
+    }
+    .container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+    }
+    #studentPortal > *:not(#result) {
+        display: none !important;
+    }
+    #result {
+        display: block !important;
+    }
+    button {
+        display: none !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= STUDENT PORTAL VIEW ================= -->
+<div class="container" id="studentPortal">
+    <div id="searchSection">
+        <img src="Screenshot_20260724-185055.jpg" class="logo" alt="School Logo">
+
+        <h1>SMART PUBLIC SCHOOL</h1>
+        <h2>ANDHARKOTHA</h2>
+        <h2 style="text-align:center;color:#003399; font-size: 16px;">
+        FIRST TERMINAL EXAMINATION 2026-27
+        </h2>
+
+        <p class="tagline">Dream Learn Achieve</p>
+        <hr>
+
+        <label for="class">Select Class</label>
+        <select id="class">
+            <option value="">-- Select Class --</option>
+            <option>NURSERY A</option> 
+            <option>NURSERY B</option>
+            <option>NURSERY C</option>
+            <option>LKG</option>
+            <option>UKG</option>
+            <option>CLASS 1</option>
+            <option>CLASS 2</option>
+            <option>CLASS 3</option>
+        </select>
+
+        <label for="roll">Enter Roll Number</label>
+        <input type="number" id="roll" placeholder="ENTER ROLL NUMBER">
+
+        <button onclick="checkResult()">Check Result</button>
+    </div>
+
+    <div id="result"></div>
+
+    <!-- होमपेज पर पैरेंट्स के लिए दिखने वाली टॉपर लिस्ट -->
+    <div id="publicToppersContainer" style="margin-top: 25px; display:none;"></div>
+
+    <button onclick="openLogin()" id="loginTriggerBtn" style="background:#0d47a1; margin-top:20px;">🔒 Teacher Login</button>
+
+    <div class="footer" id="mainFooter">
+    © Smart Public School Andharkotha
+    </div>
+</div>
+
+<!-- ================= TEACHER DASHBOARD VIEW ================= -->
+<div class="container" id="teacherDashboard" style="display:none; max-width: 700px;">
+    <h2 style="color:#003399; font-size: 20px;" id="dashboardTitle">👨‍🏫 Teacher Dashboard - Add Student Result</h2>
+    <hr>
+    
+    <button onclick="logoutTeacher()" style="background:red; width:auto; padding: 8px 15px; float: right; margin-top:0;">Logout</button>
+    <div style="clear: both;"></div>
+
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 10px;">
+        <h3 id="formHeading" style="margin-top:0; color:#333;">Add New Student Result</h3>
+        
+        <input type="hidden" id="editIndex" value="-1">
+
+        <label>Student Name</label>
+        <input type="text" id="newName" placeholder="ENTER STUDENT NAME" oninput="this.value = this.value.toUpperCase()">
+
+        <label>Father's Name</label>
+        <input type="text" id="newFather" placeholder="ENTER FATHER'S NAME" oninput="this.value = this.value.toUpperCase()">
+
+        <label>Select Class</label>
+        <select id="newClass" onchange="toggleSubjectInputs()">
+            <option value="">-- SELECT CLASS --</option>
+            <option>NURSERY A</option> 
+            <option>NURSERY B</option>
+            <option>NURSERY C</option>
+            <option>LKG</option>
+            <option>UKG</option>
+            <option>CLASS 1</option>
+            <option>CLASS 2</option>
+            <option>CLASS 3</option>
+        </select>
+
+        <label>Roll Number</label>
+        <input type="number" id="newRoll" placeholder="ENTER ROLL NUMBER">
+
+        <label>Class Teacher Name</label>
+        <select id="newTeacher">
+            <option value="">-- SELECT CLASS TEACHER --</option>
+            <option>MD EHTESAB</option>
+            <option>ABDUL ALIM</option>
+            <option>TARIQUE</option>
+            <option>HASSN</option>
+        </select>
+
+        <!-- Nursery to UKG Subjects -->
+        <div id="nurserySubjects" style="display:none;">
+            <h4 style="margin: 15px 0 5px 0; color:#003399;">Enter Marks (Leave blank if Absent)</h4>
+            <label>English (Full Marks: 100)</label><input type="number" id="n_eng" placeholder="Marks">
+            <label>Hindi (Full Marks: 100)</label><input type="number" id="n_hin" placeholder="Marks">
+            <label>Mathematics (Full Marks: 100)</label><input type="number" id="n_mat" placeholder="Marks">
+            <label>Urdu (Full Marks: 100)</label><input type="number" id="n_urd" placeholder="Marks">
+            <label>Speaking (Full Marks: 25)</label><input type="number" id="n_spk" placeholder="Marks">
+            <label>Arabic (Full Marks: 25)</label><input type="number" id="n_arb" placeholder="Marks">
+            <label>Drawing (Full Marks: 25)</label><input type="number" id="n_drw" placeholder="Marks">
+            <label>Dictation (Full Marks: 25)</label><input type="number" id="n_dct" placeholder="Marks">
+        </div>
+
+        <!-- Class 1 to 3 Subjects -->
+        <div id="seniorSubjects" style="display:none;">
+            <h4 style="margin: 15px 0 5px 0; color:#003399;">Enter Marks (Leave blank if Absent)</h4>
+            <label>English (Full Marks: 100)</label><input type="number" id="s_eng" placeholder="Marks">
+            <label>Hindi (Full Marks: 100)</label><input type="number" id="s_hin" placeholder="Marks">
+            <label>Mathematics (Full Marks: 100)</label><input type="number" id="s_mat" placeholder="Marks">
+            <label>Urdu (Full Marks: 100)</label><input type="number" id="s_urd" placeholder="Marks">
+            <label>Science (Full Marks: 100)</label><input type="number" id="s_sci" placeholder="Marks">
+            <label>SST (Full Marks: 100)</label><input type="number" id="s_sst" placeholder="Marks">
+            <label>Computer (Full Marks: 75)</label><input type="number" id="s_cmp" placeholder="Marks">
+            <label>GK (Full Marks: 25)</label><input type="number" id="s_gk" placeholder="Marks">
+            <label>Speaking (Full Marks: 25)</label><input type="number" id="s_spk" placeholder="Marks">
+            <label>Arabic (Full Marks: 25)</label><input type="number" id="s_arb" placeholder="Marks">
+            <label>Drawing (Full Marks: 25)</label><input type="number" id="s_drw" placeholder="Marks">
+            <label>Dictation (Full Marks: 25)</label><input type="number" id="s_dct" placeholder="Marks">
+        </div>
+
+        <button onclick="saveStudentResult()" id="saveBtn" style="background:green; margin-top:20px;">💾 Save & Upload Result</button>
+        <button onclick="resetForm()" id="cancelBtn" style="background:gray; margin-top:10px; display:none;">Cancel Edit</button>
+    </div>
+
+    <!-- टीचर्स के लिए टॉपर लिस्ट को कंट्रोल (Enable/Disable) करने का ऑप्शन -->
+    <div style="margin-top: 25px; background: #eef2f7; padding: 15px; border-radius: 8px; border: 1px solid #ccc;">
+        <h3 style="margin-top:0; color:#003399;">🏆 School Toppers Portal Control</h3>
+        <p style="font-size: 13px; color: #555;">यहाँ से आप तय कर सकते हैं कि होमपेज पर पैरेंट्स को स्कूल की टॉपर लिस्ट दिखाई दे या नहीं।</p>
+        <button onclick="togglePublishToppers(true)" style="background: #28a745;">📢 Publish Toppers List for Parents</button>
+        <button onclick="togglePublishToppers(false)" style="background: #dc3545; margin-top: 10px;">🔒 Hide Toppers List from Parents</button>
+    </div>
+
+    <!-- टीचर्स के खुद देखने के लिए टॉपर लिस्ट बटन -->
+    <button onclick="showTeacherToppers()" style="background:#ff9800; margin-top:20px; font-weight:bold;">📊 View Toppers Analysis (Teacher Only)</button>
+    <div id="teacherToppersResult" style="margin-top: 15px;"></div>
+
+    <h3 style="margin-top: 25px;">All Uploaded Students List</h3>
+    <table>
+        <tr>
+            <th>Roll</th>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Action</th>
+        </tr>
+        <tbody id="dashboardTableBody"></tbody>
+    </table>
+</div>
+
+<!-- Login Box Modal -->
+<div id="loginBox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div style="background:white; width:320px; padding:20px; border-radius:10px; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+        <h2 style="text-align:center; color:#003399;">Teacher Login</h2>
+        <input type="text" id="userid" placeholder="ENTER USER ID" oninput="this.value = this.value.toUpperCase()">
+        <input type="text" id="schoolcode" placeholder="ENTER SCHOOL CODE" style="margin-top:10px;" oninput="this.value = this.value.toUpperCase()">
+        <input type="password" id="password" placeholder="ENTER PASSWORD" style="margin-top:10px;">
+
+        <button onclick="teacherLogin()" style="background:green; margin-top:15px;">Login</button>
+        <button onclick="closeLogin()" style="background:red; margin-top:10px;">Close</button>
+    </div>
+</div>
+
+<script>
+const fullMarksConfig = {
+    nursery: { English: 100, Hindi: 100, Mathematics: 100, Urdu: 100, Speaking: 25, Arabic: 25, Drawing: 25, Dictation: 25 },
+    senior: { English: 100, Hindi: 100, Mathematics: 100, Urdu: 100, Science: 100, SST: 100, Computer: 75, GK: 25, Speaking: 25, Arabic: 25, Drawing: 25, Dictation: 25 }
+};
+
+if (!localStorage.getItem("schoolStudents")) {
+    let defaultData = [
+        { 
+          roll: "1", name: "SAMEEM SHEIKH", father: "ABDUL SHEIKH", cls: "CLASS 3", teacher: "MD EHTESAB",
+          marks: { English: 85, Hindi: 80, Mathematics: 90, Urdu: 88, Science: 82, SST: 78, Computer: 60, GK: 20, Speaking: 22, Arabic: 21, Drawing: 23, Dictation: 20 } 
+        },
+        { 
+          roll: "3", name: "SIMRAN KHATOON", father: "SAFI KULSHIT", cls: "NURSERY A", teacher: "ABDUL ALIM",
+          marks: { English: 90, Hindi: 85, Mathematics: 88, Urdu: 92, Speaking: 23, Arabic: 22, Drawing: 24, Dictation: 21 } 
+        }
+    ];
+    localStorage.setItem("schoolStudents", JSON.stringify(defaultData));
+}
+
+window.onload = function() {
+    renderPublicToppers();
+};
+
+function toggleSubjectInputs() {
+    let cls = document.getElementById("newClass").value;
+    let nurseryDiv = document.getElementById("nurserySubjects");
+    let seniorDiv = document.getElementById("seniorSubjects");
+
+    if (cls.includes("NURSERY") || cls === "LKG" || cls === "UKG") {
+        nurseryDiv.style.display = "block";
+        seniorDiv.style.display = "none";
+    } else if (cls.includes("CLASS")) {
+        nurseryDiv.style.display = "none";
+        seniorDiv.style.display = "block";
+    } else {
+        nurseryDiv.style.display = "none";
+        seniorDiv.style.display = "none";
+    }
+}
+
+function checkResult() {
+    let roll = document.getElementById("roll").value.trim();
+    let cls = document.getElementById("class").value;
+
+    let students = JSON.parse(localStorage.getItem("schoolStudents")) || [];
+    let student = students.find(s => s.roll === roll && s.cls === cls);
+
+    if (student) {
+        let isNurseryType = student.cls.includes("NURSERY") || student.cls === "LKG" || student.cls === "UKG";
+        let config = isNurseryType ? fullMarksConfig.nursery : fullMarksConfig.senior;
+
+        let totalMarksObtained = 0;
+        let totalFullMarks = 0;
+        let isAbsentInAnySubject = false;
+
+        let tableRows = "";
+        for (let sub in config) {
+            let fm = config[sub];
+            totalFullMarks += fm;
+            
+            let val = student.marks[sub];
+            if (val === "" || val === null || val === undefined || isNaN(val)) {
+                isAbsentInAnySubject = true;
+                tableRows += `<tr><td>${sub.toUpperCase()}</td><td style="color:red; font-weight:bold;">ABSENT</td><td>${fm}</td></tr>`;
+            } else {
+                let m = Number(val);
+                totalMarksObtained += m;
+                tableRows += `<tr><td>${sub.toUpperCase()}</td><td>${m}</td><td>${fm}</td></tr>`;
+            }
+        }
+
+        let percent = ((totalMarksObtained / totalFullMarks) * 100).toFixed(2);
+        let teacherName = (student.teacher || "MD EHTESAB").toUpperCase();
+
+        let resultStatusHTML = "";
+        if (isAbsentInAnySubject) {
+            resultStatusHTML = `<th colspan="2">RESULT STATUS</th><th class="fail">FAIL (ABSENT)</th>`;
+        } else {
+            resultStatusHTML = `<th colspan="2">RESULT STATUS</th><th class="pass">PASS</th>`;
+        }
+
+        document.getElementById("result").innerHTML = `
+            <div class="mark-sheet">
+                <div style="text-align:center;">
+                    <img src="Screenshot_20260724-185055.jpg" style="width:70px; height:70px; border-radius:50%; object-fit:cover;">
+                    <h2 style="margin:5px 0 0 0; color:#003399; font-size:20px;">SMART PUBLIC SCHOOL ANDHARKOTHA</h2>
+                    <p style="margin:2px 0; font-size:12px; color:#555;">FIRST TERMINAL EXAMINATION (2026-27)</p>
+                </div>
+                <hr style="margin:10px 0; border-top:1px solid #003399;">
+                
+                <div class="info-grid">
+                    <div><b>STUDENT NAME:</b> ${student.name.toUpperCase()}</div>
+                    <div><b>ROLL NO:</b> ${student.roll}</div>
+                    <div><b>FATHER'S NAME:</b> ${student.father.toUpperCase()}</div>
+                    <div><b>CLASS:</b> ${student.cls.toUpperCase()}</div>
+                </div>
+
+                <table>
+                    <tr><th>SUBJECT</th><th>MARKS OBTAINED</th><th>FULL MARKS</th></tr>
+                    ${tableRows}
+                    <tr><th>TOTAL MARKS</th><th><b>${totalMarksObtained}</b></th><th><b>${totalFullMarks}</b></th></tr>
+                    <tr><th colspan="2">PERCENTAGE</th><th><b>${percent}%</b></th></tr>
+                    <tr>${resultStatusHTML}</tr>
+                </table>
+
+                <div class="sign-section">
+                    <div>CLASS TEACHER<br><br>(${teacherName})</div>
+                    <div>PRINCIPAL<br><br>(SAHIL AKHTAR)</div>
+                </div>
+            </div>
+            <br>
+            <button onclick="window.print()">🖨️ Print / Save Marksheet</button>
+            <button onclick="location.reload()" style="background:#6c757d; margin-top:5px;">🔙 Back to Search</button>
+        `;
+        
+        document.getElementById("searchSection").style.display = "none";
+        document.getElementById("loginTriggerBtn").style.display = "none";
+        document.getElementById("mainFooter").style.display = "none";
+        document.getElementById("publicToppersContainer").style.display = "none";
+
+    } else {
+        document.getElementById("result").innerHTML = `
+            <h3 style="color:red; text-align:center; margin-top:20px;">RESULT NOT FOUND</h3>
+        `;
+    }
+}
+
+function saveStudentResult() {
+    let editIndex = Number(document.getElementById("editIndex").value);
+    let name = document.getElementById("newName").value.trim().toUpperCase();
+    let father = document.getElementById("newFather").value.trim().toUpperCase();
+    let cls = document.getElementById("newClass").value;
+    let roll = document.getElementById("newRoll").value.trim();
+    let teacher = document.getElementById("newTeacher").value;
+
+    if (!name || !roll || !father || !cls || !teacher) {
+        alert("कृपया सभी जरूरी जानकारी, क्लास और क्लास टीचर का नाम चुनें!");
+        return;
+    }
+
+    let marks = {};
+    let isNurseryType = cls.includes("NURSERY") || cls === "LKG" || cls === "UKG";
+
+    if (isNurseryType) {
+        marks = {
+            English: document.getElementById("n_eng").value,
+            Hindi: document.getElementById("n_hin").value,
+            Mathematics: document.getElementById("n_mat").value,
+            Urdu: document.getElementById("n_urd").value,
+            Speaking: document.getElementById("n_spk").value,
+            Arabic: document.getElementById("n_arb").value,
+            Drawing: document.getElementById("n_drw").value,
+            Dictation: document.getElementById("n_dct").value
+        };
+    } else {
+        marks = {
+            English: document.getElementById("s_eng").value,
+            Hindi: document.getElementById("s_hin").value,
+            Mathematics: document.getElementById("s_mat").value,
+            Urdu: document.getElementById("s_urd").value,
+            Science: document.getElementById("s_sci").value,
+            SST: document.getElementById("s_sst").value,
+            Computer: document.getElementById("s_cmp").value,
+            GK: document.getElementById("s_gk").value,
+            Speaking: document.getElementById("s_spk").value,
+            Arabic: document.getElementById("s_arb").value,
+            Drawing: document.getElementById("s_drw").value,
+            Dictation: document.getElementById("s_dct").value
+        };
+    }
+
+    let students = JSON.parse(localStorage.getItem("schoolStudents")) || [];
+
+    if (editIndex === -1) {
+        let existing = students.find(s => s.roll === roll && s.cls === cls);
+        if (existing) {
+            alert("इस क्लास में इस रोल नंबर का रिजल्ट पहले से मौजूद है!");
+            return;
+        }
+        students.push({ roll, name, father, cls, teacher, marks });
+        alert("छात्र का रिजल्ट सफलतापूर्वक अपलोड हो गया है!");
+    } else {
+        students[editIndex] = { roll, name, father, cls, teacher, marks };
+        alert("छात्र का रिजल्ट सफलतापूर्वक अपडेट कर दिया गया है!");
+    }
+
+    localStorage.setItem("schoolStudents", JSON.stringify(students));
+    resetForm();
+    loadDashboardTable();
+    renderPublicToppers();
+}
+
+function loadDashboardTable() {
+    let students = JSON.parse(localStorage.getItem("schoolStudents")) || [];
+    let tbody = document.getElementById("dashboardTableBody");
+    tbody.innerHTML = "";
+
+    students.forEach((student, index) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${student.roll}</td>
+                <td>${student.name}</td>
+                <td>${student.cls}</td>
+                <td>
+                    <button onclick="editStudent(${index})" style="background:orange; padding:5px 8px; margin:0 2px; font-size:12px; width:auto;">Edit</button>
+                    <button onclick="deleteStudent(${index})" style="background:red; padding:5px 8px; margin:0 2px; font-size:12px; width:auto;">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function togglePublishToppers(status) {
+    localStorage.setItem("publishToppers", status ? "true" : "false");
+    renderPublicToppers();
+    if (status) {
+        alert("📢 टॉपर लिस्ट अब होमपेज पर पैरेंट्स के लिए लाइव (Publish) कर दी गई है!");
+    } else {
+        alert("🔒 टॉपर लिस्ट होमपेज से छुपा दी गई है!");
+    }
+}
+
+function renderPublicToppers() {
+    let container = document.getElementById("publicToppersContainer");
+    let isPublished = localStorage.getItem("publishToppers") === "true";
+
+    if (!isPublished) {
+        container.style.display = "none";
+        return;
+    }
+
+    let students = JSON.parse(localStorage.getItem("schoolStudents")) || [];
+    if (students.length === 0) {
+        container.style.display = "none";
+        return;
+    }
+
+    let evaluatedStudents = students.map(student => {
+        let isNurseryType = student.cls.includes("NURSERY") || student.cls === "LKG" || student.cls === "UKG";
+        let config = isNurseryType ? fullMarksConfig.nursery : fullMarksConfig.senior;
+
+        let totalObtained = 0;
+        let totalFull = 0;
+        let hasAbsent = false;
+
+        for (let sub in config) {
+            totalFull += config[sub];
+            let val = student.marks[sub];
+            if (val === "" || val === null || val === undefined || isNaN(val)) {
+                hasAbsent = true;
+            } else {
+                totalObtained += Number(val);
+            }
+        }
+        let percent = Number(((totalObtained / totalFull) * 100).toFixed(2));
+        return { ...student, totalObtained, totalFull, percent, hasAbsent };
+    });
+
+    evaluatedStudents.sort((a, b) => {
+        if (a.hasAbsent && !b.hasAbsent) return 1;
+        if (!a.hasAbsent && b.hasAbsent) return -1;
+        return b.percent - a.percent;
+    });
+
+    let html = `<div style="background:#fff3cd; padding:15px; border-radius:8px; border:1px solid #ffeeba;">
+                    <h3 style="margin-top:0; color:#856404; text-align:center;">🏆 School Toppers & Ranking 🏆</h3>`;
+
+    evaluatedStudents.forEach((s, idx) => {
+        let badge = "";
+        if (!s.hasAbsent) {
+            if (idx === 0) badge = "🥇 SCHOOL 1ST TOPPER";
+            else if (idx === 1) badge = "🥈 SCHOOL 2ND RANK";
+            else if (idx === 2) badge = "🥉 SCHOOL 3RD RANK";
+            else badge = `Rank #${idx + 1}`;
+        } else {
+            badge = "❌ FAIL (ABSENT)";
+        }
+
+        html += `<div style="background:white; padding:10px; margin-top:8px; border-radius:5px; border-left: 5px solid ${s.hasAbsent ? 'red' : '#003399'};">
+                    <b>${badge}</b><br>
+                    <b>Name:</b> ${s.name} | <b>Class:</b> ${s.cls} | <b>Roll:</b> ${s.roll}<br>
+                    <b>Total Marks:</b> ${s.totalObtained} / ${s.totalFull} | <b>Percentage:</b> ${s.percent}%
+                 </div>`;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+    container.style.display = "block";
+}
+
+function showTeacherToppers() {
+    let students = JSON.parse(localStorage.getItem("schoolStudents")) || [];
+    let container = document.getElementById("teacherToppersResult");
+    if (students.length === 0) {
+        container.innerHTML = "<p style='color:red;'>कोई डेटा उपलब्ध नहीं है!</p>";
+        return;
+    }
+
+    let evaluatedStudents = students.map(student => {
+        let isNurseryType = student.cls.includes("NURSERY") || student.cls === "LKG" || student.cls === "UKG";
+        let config = isNurseryType ? fullMarksConfig.nursery : fullMarksConfig.senior;
+
+        let totalObtained = 0;
+        let totalFull = 0;
+        let hasAbsent = false;
+
+        for (let sub in config) {
+            totalFull += config[sub];
+            let val = student.marks[sub];
+            if (val === "" || val === null || val === undefined || isNaN(val)) {
+                hasAbsent = true;
+            } else {
+                totalObtained += Number(val);
+            }
+        }
+        let percent = Number(((totalObtained / totalFull) * 100).toFixed(2));
+        return { ...student, totalObtained, totalFull, percent, hasAbsent };
+    });
+
+    evaluatedStudents.sort((a, b) => {
+        if (a.hasAbsent && !b.hasAbsent) return 1;
+        if (!a.hasAbsent && b.hasAbsent) return -1;
+        return b.percent - a.percent;
+    });
+
+    let html = `<div style="background:#e2e8f0; padding:15px; border-radius:8px; border:1px solid #cbd5e1;">
+                    <h4 style="margin-top:0; color:#1e293b; text-align:center;">📊 Teacher Analysis: Toppers & Rankings</h4>`;
+
+    evaluatedStudents.forEach((s, idx) => {
+        let badge = !s.hasAbsent ? `Rank #${idx + 1}` : "FAIL (ABSENT)";
+        html += `<div style="background:white; padding:8px; margin-top:5px; border-radius:4px; font-size:13px;">
+                    <b>${badge}</b> - ${s.name} (${s.cls}, Roll: ${s.roll}) - <b>${s.percent}%</b>
+                 </div>`;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+function editStudent(index) {
+    let students = JSON.parse(localStorage.getItem("schoolStudents")) || [];
+    let s = students[index];
+
+    document.getElementById("editIndex").value = index;
+    document.getElementById("newName").value = s.name;
+    document.getElementById("newFather").value = s.father;
+    document.getElementById("newClass").value = s.cls;
+    document.getElementById("newRoll").value = s.roll;
+    document.getElementById("newTeacher").value = s.teacher || "";
+
+    toggleSubjectInputs();
+
+    let isNurseryType = s.cls.includes("NURSERY") || s.cls === "LKG" || s.cls === "UKG";
+    if (isNurseryType) {
+        document.getElementById("n_eng").value = s.marks.English !== undefined ? s.marks.English : "";
+        document.getElementById("n_hin").value = s.marks.Hindi !== undefined ? s.marks.Hindi : "";
+        document.getElementById("n_mat").value = s.marks.Mathematics !== undefined ? s.marks.Mathematics : "";
+        document.getElementById("n_urd").value = s.marks.Urdu !== undefined ? s.marks.Urdu : "";
+        document.getElementById("n_spk").value = s.marks.Speaking !== undefined ? s.marks.Speaking : "";
+        document.getElementById("n_arb").value = s.marks.Arabic !== undefined ? s.marks.Arabic : "";
+        document.getElementById("n_drw").value = s.marks.Drawing !== undefined ? s.marks.Drawing : "";
+        document.getElementById("n_dct").value = s.marks.Dictation !== undefined ? s.marks.Dictation : "";
+    } else {
+        document.getElementById("s_eng").value = s.marks.English !== undefined ? s.marks.English : "";
+        document.getElementById("s_hin").value = s.marks.Hindi !== undefined ? s.marks.Hindi : "";
+        document.getElementById("s_mat").value = s.marks.Mathematics !== undefined ? s.marks.Mathematics : "";
+        document.getElementById("s_urd").value = s.marks.Urdu !== undefined ? s.marks.Urdu : "";
+        document.getElementById("s_sci").value = s.marks.Science !== undefined ? s.marks.Science : "";
+        document.getElementById("s_sst").value = s.marks.SST !== undefined ? s.marks.SST : "";
+        document.getElementById("s_cmp").value = s.marks.Computer !== undefined ? s.marks.Computer : "";
+        document.getElementById("s_gk").value = s.marks.GK !== undefined ? s.marks.GK : "";
+        document.getElementById("s_spk").value = s.marks.Speaking !== undefined ? s.marks.Speaking : "";
+        document.getElementById("s_arb").value = s.marks.Arabic !== undefined ? s.marks.Arabic : "";
+        document.getElementById("s_drw").value = s.marks.Drawing !== undefined ? s.marks.Drawing : "";
+        document.getElementById("s_dct").value = s.marks.Dictation !== undefined ? s.marks.Dictation : "";
+    }
+
+    document.getElementById("formHeading").innerText = "Edit Student Result";
+    document.getElementById("saveBtn").innerText = "💾 Update Result";
+    document.getElementById("cancelBtn").style.display = "block";
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function resetForm() {
+    document.getElementById("editIndex").value = "-1";
+    document.getElementById("newName").value = "";
+    document.getElementById("newFather").value = "";
+    document.getElementById("newRoll").value = "";
+    document.getElementById("newClass").value = "";
+    document.getElementById("newTeacher").value = "";
+    document.getElementById("nurserySubjects").style.display = "none";
+    document.getElementById("seniorSubjects").style.display = "none";
+    document.getElementById("formHeading").innerText = "Add New Student Result";
+    document.getElementById("saveBtn").innerText = "💾 Save & Upload Result";
+    document.getElementById("cancelBtn").style.display = "none";
+}
+
+function deleteStudent(index) {
+    if (confirm("क्या आप वाकई इस रिजल्ट को डिलीट करना चाहते हैं?")) {
+        let students = JSON.parse(localStorage.getItem("schoolStudents")) || [];
+        students.splice(index, 1);
+        localStorage.setItem("schoolStudents", JSON.stringify(students));
+        loadDashboardTable();
+        renderPublicToppers();
+    }
+}
+
+function openLogin() { document.getElementById("loginBox").style.display = "block"; }
+function closeLogin() { document.getElementById("loginBox").style.display = "none"; }
+
+function teacherLogin() {
+    let user = document.getElementById("userid").value.trim().toUpperCase();
+    let code = document.getElementById("schoolcode").value.trim().toUpperCase();
+    let pass = document.getElementById("password").value.trim().toUpperCase();
+
+    if (user === "TEACHER" && code === "SPS2026" && pass === "SMART@123") {
+        alert("Login Successful");
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("studentPortal").style.display = "none";
+        document.getElementById("teacherDashboard").style.display = "block";
+        loadDashboardTable();
+    } else {
+        alert("Wrong User ID, School Code or Password");
+    }
+}
+
+function logoutTeacher() {
+    document.getElementById("teacherDashboard").style.display = "none";
+    document.getElementById("studentPortal").style.display = "block";
+    resetForm();
+    renderPublicToppers();
+    document.getElementById("userid").value = "";
+    document.getElementById("schoolcode").value = "";
+    document.getElementById("password").value = "";
+}
+</script>
+
+</body>
+</html>
+
+```
